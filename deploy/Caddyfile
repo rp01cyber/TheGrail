@@ -1,0 +1,18 @@
+# Replace notes.example.com with your domain. Caddy fetches a TLS cert
+# automatically. Point your DNS A record at the Linode's IP first.
+notes.example.com {
+    encode gzip
+
+    # Serve uploaded files and static assets straight from disk (fast).
+    handle_path /media/* {
+        root * /opt/pentestnotes/media
+        file_server
+    }
+    handle_path /static/* {
+        root * /opt/pentestnotes/staticfiles
+        file_server
+    }
+
+    # Everything else goes to the app.
+    reverse_proxy 127.0.0.1:8000
+}
