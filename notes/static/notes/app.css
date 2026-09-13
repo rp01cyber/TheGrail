@@ -92,8 +92,8 @@
     color:var(--ink-2);font-size:13.5px;user-select:none;
   }
   .row:hover{background:var(--line-soft)}
-  .row .chev{width:14px;height:14px;flex:0 0 auto;transition:transform .15s;color:var(--ink-3)}
-  .row.collapsed .chev{transform:rotate(-90deg)}
+  .row .chev{width:14px;height:14px;flex:0 0 auto;transition:transform .15s;color:var(--ink-3);transform:rotate(90deg)}
+  .row.collapsed .chev{transform:rotate(0deg)}
   .row .ico{width:16px;height:16px;flex:0 0 auto;color:var(--ink-3)}
   .row.folder .ico{color:#C99A3B}
   .row .name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
