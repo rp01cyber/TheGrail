@@ -1,0 +1,16 @@
+{% extends "notes/base.html" %}
+{% block title %}Account locked — PentestNotes{% endblock %}
+{% block main %}
+  <div class="login-wrap">
+    <h2>Account locked</h2>
+    <p style="color:var(--ink-2);font-size:14px;line-height:1.6">
+      Too many failed login attempts. For security, this account has been locked.
+      An administrator must unlock it before you can sign in again.
+    </p>
+    <p style="color:var(--ink-3);font-size:13px;margin-top:14px">
+      If this is your account, contact an administrator to have it unlocked (and your
+      password reset if needed).
+    </p>
+  </div>
+{% endblock %}
+{% block rail %}{% endblock %}

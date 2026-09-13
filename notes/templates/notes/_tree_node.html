@@ -1,0 +1,27 @@
+<li>
+  {% if node.folders or node.pages %}
+    <div class="row folder collapsed" data-toggle>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg>
+      <svg class="ico" viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z"/></svg>
+      <span class="name">{{ node.folder.name }}</span>
+      {% if node.private %}<svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>{% endif %}
+    </div>
+    <div class="children hidden">
+      <ul>
+        {% for child in node.folders %}{% include "notes/_tree_node.html" with node=child %}{% endfor %}
+        {% for p in node.pages %}
+          <li><a href="{{ p.page.get_absolute_url }}"><div class="row page-leaf">
+            <span style="width:14px"></span>
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+            <span class="name">{{ p.page.title }}</span>
+          </div></a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% else %}
+    <div class="row folder"><span style="width:14px"></span>
+      <svg class="ico" viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z"/></svg>
+      <span class="name">{{ node.folder.name }}</span>
+    </div>
+  {% endif %}
+</li>

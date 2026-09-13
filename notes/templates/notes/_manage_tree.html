@@ -1,0 +1,27 @@
+<div class="mrow is-folder" style="padding-left:{{ node.depth|add:node.depth|add:14 }}px">
+  <div class="mname">
+    <svg class="ico" viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z"/></svg>
+    <span class="nm">{{ node.folder.name }}</span>
+    {% if node.private %}<span class="mprivate">private</span>{% endif %}
+  </div>
+  <div class="mactions">
+    {% if node.can_edit_folder %}<a class="ma" href="{% url 'folder_edit' node.folder.pk %}">Rename</a>{% endif %}
+    {% if node.can_edit_folder %}<button class="ma" data-move data-url="{% url 'folder_move' node.folder.pk %}" data-name="{{ node.folder.name }}" data-kind="folder">Move</button>{% endif %}
+    {% if node.can_delete_folder %}<button class="ma del" data-del data-url="{% url 'folder_delete' node.folder.pk %}" data-name="{{ node.folder.name }}" data-kind="folder">Delete</button>{% endif %}
+  </div>
+</div>
+{% for p in node.pages %}
+  <div class="mrow" style="padding-left:{{ p.depth|add:p.depth|add:14 }}px">
+    <div class="mname">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+      <a class="nm" href="{{ p.page.get_absolute_url }}">{{ p.page.title }}</a>
+    </div>
+    <div class="mactions">
+      {% if p.can_edit %}<a class="ma" href="{% url 'page_edit' p.page.pk %}">Edit</a>{% endif %}
+      {% if p.can_clone %}<form method="post" action="{% url 'page_clone' p.page.pk %}" style="display:inline">{% csrf_token %}<button class="ma" type="submit">Clone</button></form>{% endif %}
+      {% if p.can_edit %}<button class="ma" data-move data-url="{% url 'page_move' p.page.pk %}" data-name="{{ p.page.title }}" data-kind="page">Move</button>{% endif %}
+      {% if p.can_delete %}<button class="ma del" data-del data-url="{% url 'page_delete' p.page.pk %}" data-name="{{ p.page.title }}" data-kind="page">Delete</button>{% endif %}
+    </div>
+  </div>
+{% endfor %}
+{% for child in node.children %}{% include "notes/_manage_tree.html" with node=child %}{% endfor %}
