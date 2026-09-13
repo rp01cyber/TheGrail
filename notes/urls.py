@@ -23,6 +23,8 @@ urlpatterns = [
     path("repo/folder/<int:pk>/move/", mg.folder_move, name="folder_move"),
     path("repo/folder/<int:pk>/edit/", mg.folder_edit, name="folder_edit"),
     path("repo/folder/<int:pk>/delete/", mg.folder_delete, name="folder_delete"),
+    path("repo/folder/<int:pk>/visibility/", mg.folder_visibility, name="folder_visibility"),
+    path("repo/page/<int:pk>/visibility/", mg.page_visibility, name="page_visibility"),
     path("repo/page/<int:pk>/delete/", mg.page_delete, name="page_delete"),
     path("repo/file/<int:pk>/delete/", mg.file_delete, name="file_delete"),
 
