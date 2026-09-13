@@ -27,15 +27,16 @@ def _forbidden(msg="You don't have permission to do that."):
 
 def _manage_node(folder, user, depth=0):
     is_admin = permissions.is_admin(user)
+    parent_private = bool(folder.parent and folder.parent.is_effectively_private)
     node = {
         "folder": folder,
         "depth": depth,
         "private": folder.visibility == "private",
-        # Renaming, moving, deleting and reordering folders is admin-only —
-        # this is the dashboard structure. Adding a folder is open to any
-        # logged-in user (handled by the New Folder modal).
+        "own_private": folder.visibility == "private",
+        "inherited_private": parent_private,          # a parent folder is private
         "can_edit_folder": is_admin,
         "can_delete_folder": is_admin,
+        "can_set_visibility": is_admin,
         "can_add": user.is_authenticated,
         "pages": [],
         "children": [],
@@ -46,8 +47,11 @@ def _manage_node(folder, user, depth=0):
             node["pages"].append({
                 "page": p,
                 "depth": depth + 1,
+                "own_private": p.visibility == "private",
+                "inherited_private": bool(p.folder and p.folder.is_effectively_private),
                 "can_edit": "edit" in pc,
                 "can_delete": "delete" in pc,
+                "can_set_visibility": is_admin,
                 "can_clone": is_admin or "create_child" in permissions.effective_capabilities(user, folder),
             })
     for c in folder.children.all():
@@ -257,3 +261,36 @@ def file_delete(request, pk):
     pf.delete()
     messages.success(request, "File removed.")
     return redirect("page_edit", pk=page_pk)
+
+
+# ---- Visibility toggles (admin-only) --------------------------------------
+
+@login_required
+@require_POST
+def folder_visibility(request, pk):
+    folder = get_object_or_404(Folder, pk=pk)
+    if not permissions.is_admin(request.user):
+        return _forbidden("Only administrators can change visibility.")
+    vis = request.POST.get("visibility")
+    if vis in ("public", "private"):
+        folder.visibility = vis
+        folder.save(update_fields=["visibility"])
+        note = ("now private — it and everything inside it are hidden from public view"
+                if vis == "private"
+                else "now public — anyone who can reach the site can read it and its public contents")
+        messages.success(request, f"Folder “{folder.name}” is {note}.")
+    return redirect("manage_pages")
+
+
+@login_required
+@require_POST
+def page_visibility(request, pk):
+    page = get_object_or_404(Page, pk=pk)
+    if not permissions.is_admin(request.user):
+        return _forbidden("Only administrators can change visibility.")
+    vis = request.POST.get("visibility")
+    if vis in ("public", "private"):
+        page.visibility = vis
+        page.save(update_fields=["visibility"])
+        messages.success(request, f"Page “{page.title}” is now {vis}.")
+    return redirect("manage_pages")
