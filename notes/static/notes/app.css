@@ -464,3 +464,16 @@ a.chip:hover{background:var(--blue-wash);border-color:var(--blue);color:var(--bl
   border:1px solid var(--line);background:var(--surface);color:var(--ink-2);font-weight:600;font-size:13.5px;
   text-decoration:none;flex:0 0 auto}
 .home-btn:hover{background:var(--blue-wash);border-color:var(--blue);color:var(--blue-ink);text-decoration:none}
+
+/* ===== Visibility badges/toggles (Manage pages) ===== */
+.vis-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-family:var(--mono);
+  padding:2px 8px;border-radius:12px;border:1px solid transparent;cursor:pointer;line-height:1.6;
+  background:none;font:inherit;font-size:11px}
+button.vis-badge{cursor:pointer}
+.vis-badge.public,.vis-badge.public-static{color:var(--green);background:#EAF6EF;border-color:#C7E6D4}
+.vis-badge.private,.vis-badge.private-static{color:var(--priv);background:#F3ECFE;border-color:#E0CDFB}
+.vis-badge.inherited{color:var(--ink-3);background:var(--line-soft);cursor:default}
+.vis-badge.public:hover{outline:2px solid var(--priv);outline-offset:1px}
+.vis-badge.private:hover{outline:2px solid var(--green);outline-offset:1px}
+:root[data-theme="dark"] .vis-badge.public,:root[data-theme="dark"] .vis-badge.public-static{background:#12271B}
+:root[data-theme="dark"] .vis-badge.private,:root[data-theme="dark"] .vis-badge.private-static{background:#241832}
