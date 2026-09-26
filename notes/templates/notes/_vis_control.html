@@ -1,0 +1,19 @@
+{% comment %}Per-item Public/Private dropdown. Saves on change (admin only).{% endcomment %}
+{% if item.inherited_private %}
+  <select class="vis-select inherited" disabled title="A parent folder is private, so this is private too. Change the parent folder to expose it.">
+    <option>Private (inherited)</option>
+  </select>
+{% elif item.can_set_visibility %}
+  <form method="post" action="{% url url_name pk %}" style="display:inline" data-vis-form>
+    {% csrf_token %}
+    <select name="visibility" class="vis-select {% if item.own_private %}is-private{% else %}is-public{% endif %}"
+            data-current="{% if item.own_private %}private{% else %}public{% endif %}">
+      <option value="public" {% if not item.own_private %}selected{% endif %}>🌐 Public</option>
+      <option value="private" {% if item.own_private %}selected{% endif %}>🔒 Private</option>
+    </select>
+  </form>
+{% else %}
+  <select class="vis-select {% if item.own_private %}is-private{% else %}is-public{% endif %}" disabled>
+    <option>{% if item.own_private %}🔒 Private{% else %}🌐 Public{% endif %}</option>
+  </select>
+{% endif %}

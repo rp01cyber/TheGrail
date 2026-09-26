@@ -1,0 +1,122 @@
+{% extends "notes/base.html" %}
+{% load md %}
+{% block title %}{{ page.title }} — PentestNotes{% endblock %}
+
+{% block main %}
+  <div class="crumb">
+    <a href="{% url 'home' %}">Home</a>
+    {% for f in breadcrumbs %}<span class="sep">/</span><span>{{ f.name }}</span>{% endfor %}
+    <span class="sep">/</span><span class="here">{{ page.title }}</span>
+  </div>
+
+  <div class="title-row">
+    <h2 class="page-title">{{ page.title }}</h2>
+  </div>
+  {% if page.description %}<p class="page-desc">{{ page.description }}</p>{% endif %}
+
+  <div class="tabs">
+    <button class="tab on" data-tab="knowledge">
+      <svg class="tico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      Knowledge
+    </button>
+    <button class="tab" data-tab="testing">
+      <svg class="tico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v7.5L4.2 19a2 2 0 0 0 1.7 3h12.2a2 2 0 0 0 1.7-3L14 9.5V2"/><path d="M8.5 2h7"/></svg>
+      Testing
+    </button>
+  </div>
+
+  <section class="panel on" data-panel="knowledge">
+    <div class="panel-banner banner-k">Reference — read before you test</div>
+    <div class="rendered">
+      {% if page.knowledge_md %}{{ page.knowledge_md|render_md }}{% else %}<p class="empty">No knowledge content yet.</p>{% endif %}
+    </div>
+
+    {% if links %}
+      <h3 class="sec">Further reading</h3>
+      <ul class="reading pts">
+        {% for link in links %}
+          <li><a href="{{ link.url }}" target="_blank" rel="noopener">{{ link.label }}
+            <svg class="ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg></a></li>
+        {% endfor %}
+      </ul>
+      <p class="reading-note">Further Reading holds external links only — internal pages live in the workspace tree.</p>
+    {% endif %}
+  </section>
+
+  <section class="panel" data-panel="testing">
+    <div class="panel-banner banner-t">Hands-on — commands to run against an authorised target</div>
+    <div class="rendered">
+      {% if page.testing_md %}{{ page.testing_md|render_md }}{% else %}<p class="empty">No testing content yet.</p>{% endif %}
+    </div>
+  </section>
+{% endblock %}
+
+{% block rail %}
+<aside class="rail">
+  {% if page.is_effectively_private %}
+    <div class="visibility priv">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Private — restricted access
+    </div>
+  {% else %}
+    <div class="visibility">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+      Public — anyone can read
+    </div>
+  {% endif %}
+
+  <div class="card">
+    <h4>Export</h4>
+    <a class="action-btn" href="{% url 'export_page' page.pk %}">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+      Download as .md
+    </a>
+  </div>
+
+  {% if can_edit or can_create %}
+  <div class="card">
+    <h4>Page actions</h4>
+    {% if can_edit %}
+    <a class="action-btn primary" href="{% url 'page_edit' page.pk %}">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>
+      Edit page
+    </a>
+    {% endif %}
+    {% if can_create and page.folder %}
+    <a class="action-btn" href="{% url 'page_create' page.folder.pk %}">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      New page here
+    </a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {% if files %}
+  <div class="card">
+    <h4>Files <span class="count">{{ files|length }}</span></h4>
+    {% for file in files %}
+      <a class="file" href="{% url 'download_file' file.pk %}" style="text-decoration:none">
+        <div class="fileicon f-txt">{{ file.kind }}</div>
+        <div class="meta"><div class="fn">{{ file.original_name }}</div><div class="fs">{{ file.human_size }}</div></div>
+      </a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if tags %}
+  <div class="card">
+    <h4>Tags</h4>
+    <div class="tags">{% for tag in tags %}<a class="chip" href="{% url 'search' %}?q={{ tag.name|urlencode }}">{{ tag.name }}</a>{% endfor %}</div>
+  </div>
+  {% endif %}
+
+  {% if contributors %}
+  <div class="card">
+    <h4>Contributors</h4>
+    {% for c in contributors %}
+      <div class="contrib"><div class="avatar">{{ c.username|slice:':2'|upper }}</div><div class="cn">{{ c.username }}</div></div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</aside>
+{% endblock %}

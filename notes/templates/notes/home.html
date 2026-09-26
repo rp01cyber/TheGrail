@@ -1,0 +1,23 @@
+{% extends "notes/base.html" %}
+{% block title %}PentestNotes — Home{% endblock %}
+{% block main %}
+  <h2 class="page-title" style="margin-bottom:8px">Workspace</h2>
+  <p class="page-desc">A shared, self-hosted knowledge base for penetration testing notes, techniques, and snippets. Browse the tree on the left, or search above.</p>
+  {% if user.is_authenticated %}
+    <div style="margin:0 0 22px">
+      <a class="btn primary" style="display:inline-block" href="{% url 'folder_create' %}">+ New folder</a>
+    </div>
+  {% endif %}
+
+  <h3 class="sec">Top-level areas</h3>
+  <ul class="pts">
+    {% for f in roots %}<li><strong>{{ f.name }}</strong>{% if f.visibility == 'private' %} · private{% endif %}</li>{% empty %}<li class="empty">No folders yet. Create one in Manage.</li>{% endfor %}
+  </ul>
+
+  {% if recent %}
+  <h3 class="sec">Recently updated</h3>
+  <ul class="pts">
+    {% for p in recent %}<li><a href="{{ p.get_absolute_url }}">{{ p.title }}</a> — <span style="color:var(--ink-3)">{{ p.updated_at|date:'M j, Y' }}</span></li>{% endfor %}
+  </ul>
+  {% endif %}
+{% endblock %}
